@@ -11,9 +11,9 @@
     	"nodejs"
     ],
     "name": "read_xlsx",
-    "version": "0.0.1",
-    "main": "rxlsx",
-    "readme":"README.md",
+    "version": "0.0.2",
+    "main": "read_xlsx",
+    "readme":"readme.md",
     "license": "MIT",
     "description": "Read Excel",
     "repository" : {
