@@ -43,11 +43,15 @@ var Cell = function(cEl,sharedStringsArr) {
 		return content;
 	};
 };
-var Sheet = function(sheetId,sheetDoc,sharedStringsArr,hzip) {
+var Sheet = function(sheetEl,sheetDoc,sharedStringsArr,hzip) {
 	var t = this;
 	var worksheetEl = sheetDoc.documentElement;
 	var sheetDataEl = worksheetEl.getElementsByTagName("sheetData")[0];
 	var rowElArr = sheetDataEl.getElementsByTagName("row");
+	t.isHidden = function() {
+		var state = sheetEl.getAttribute("state");
+		return state === "hidden";
+	};
 	t.findCell = function(paramString) {
 		if(paramString == null) return paramString;
 		paramString = paramString.trim();
@@ -122,7 +126,7 @@ Sheet.getSheet = wrap(function*(sheetEl,sharedStringsArr,hzip){
 	var sheetEny = hzip.getEntry("xl/worksheets/sheet"+sheetId+".xml");
 	var sheetBuf = yield inflateRawAysnc(sheetEny.cfile);
 	var sheetDoc = new DOMParser().parseFromString(sheetBuf.toString(),'text/xml');
-	var sheet = new Sheet(sheetId,sheetDoc,sharedStringsArr,hzip);
+	var sheet = new Sheet(sheetEl,sheetDoc,sharedStringsArr,hzip);
 	return sheet;
 });
 
