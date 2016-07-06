@@ -1,9 +1,9 @@
 var fs = require("fs");
 var read_xlsx = require("../read_xlsx");
 
-var buf = fs.readFileSync("./test.xlsx");
+var excelBuffer = fs.readFileSync("./test.xlsx");
 
-read_xlsx.getWorkbook(buf).then(function(workbook){
+read_xlsx.getWorkbook(excelBuffer).then(function(workbook){
 	var sheetNames = workbook.getSheetNames();
 	console.log(sheetNames);
 	
