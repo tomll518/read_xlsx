@@ -15,7 +15,7 @@ var wrap = function(func) {
 
 var Cell = function(cEl,sharedStringsArr) {
 	var t = this;
-	t.getRName = function() {
+	t.getName = function() {
 		return cEl.getAttribute("r");
 	};
 	t.getRow = function() {
@@ -72,8 +72,9 @@ var Sheet = function(sheetEl,sheetDoc,sharedStringsArr,hzip) {
 	};
 	t.getCell = function(paramInt1,paramInt2) {
 		if(util.isString(paramInt1)) return t.findCell(paramInt1);
+		paramInt1++;
 		var paramString = util.charPlus("A",paramInt2)+paramInt1;
-		return t.findCell(paramInt1);
+		return t.findCell(paramString);
 	};
 	t.getRows = function() {
 		var rowEl = rowElArr[rowElArr.length-1];
