@@ -49,6 +49,9 @@ var Sheet = function(sheetEl,sheetDoc,sharedStringsArr,hzip) {
 	var worksheetEl = sheetDoc.documentElement;
 	var sheetDataEl = worksheetEl.getElementsByTagName("sheetData")[0];
 	var rowElArr = sheetDataEl.getElementsByTagName("row");
+	t.getMergedCells = function() {
+		
+	};
 	t.isHidden = function() {
 		var state = sheetEl.getAttribute("state");
 		return state === "hidden";
