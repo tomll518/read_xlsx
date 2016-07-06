@@ -1,8 +1,9 @@
-var DOMParser = require('./lib/xmldom').DOMParser;
-var Hzip = require('./lib/hzip');
-var co = require("./lib/co");
+var libPth = "./lib/";
+var DOMParser = require(libPth+'xmldom').DOMParser;
+var Hzip = require(libPth+'hzip');
+var co = require(libPth+"co");
 var zlib = require("zlib");
-var util = require("./lib/xlsx_util");
+var util = require(libPth+"xlsx_util");
 
 var inflateRawAysnc = util.fromStandard(zlib.inflateRaw,zlib);
 
