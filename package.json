@@ -11,7 +11,7 @@
     	"nodejs"
     ],
     "name": "read_xlsx",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "main": "read_xlsx",
     "readme":"readme.md",
     "license": "MIT",

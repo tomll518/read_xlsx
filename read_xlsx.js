@@ -129,6 +129,7 @@ var Sheet = function(sheetEl,sheetDoc,sharedStringsArr,hzip) {
 Sheet.getSheet = wrap(function*(sheetEl,sharedStringsArr,hzip){
 	var sheetId = sheetEl.getAttribute("sheetId");
 	var sheetEny = hzip.getEntry("xl/worksheets/sheet"+sheetId+".xml");
+	if(!sheetEny) return;
 	var sheetBuf = yield inflateRawAysnc(sheetEny.cfile);
 	var sheetDoc = new DOMParser().parseFromString(sheetBuf.toString(),'text/xml');
 	var sheet = new Sheet(sheetEl,sheetDoc,sharedStringsArr,hzip);
