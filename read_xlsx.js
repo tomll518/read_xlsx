@@ -126,9 +126,19 @@ var Sheet = function(sheetEl,sheetDoc,sharedStringsArr,hzip) {
 		return sheetEl.getAttribute("name");
 	};
 };
-Sheet.getSheet = wrap(function*(sheetEl,sharedStringsArr,hzip){
+Sheet.getSheet = wrap(function*(sheetEl,sharedStringsArr,relsObj,hzip){
 	var sheetId = sheetEl.getAttribute("sheetId");
-	var sheetEny = hzip.getEntry("xl/worksheets/sheet"+sheetId+".xml");
+	var sheetEny = undefined;
+	if (relsObj) {
+		var relId = sheetEl.getAttribute("r:id");
+		var relTarget = relsObj[relId];
+		if (relTarget) {
+			sheetEny = hzip.getEntry("xl/" + relTarget);
+		}
+	}
+	if (!sheetEny) {
+		sheetEny = hzip.getEntry("xl/worksheets/sheet"+sheetId+".xml");
+	}
 	if(!sheetEny) return;
 	var sheetBuf = yield inflateRawAysnc(sheetEny.cfile);
 	var sheetDoc = new DOMParser().parseFromString(sheetBuf.toString(),'text/xml');
@@ -136,7 +146,7 @@ Sheet.getSheet = wrap(function*(sheetEl,sharedStringsArr,hzip){
 	return sheet;
 });
 
-var Workbook = function(wkDoc,sharedStringsArr,hzip) {
+var Workbook = function(wkDoc,sharedStringsArr,relsObj,hzip) {
 	var t = this;
 	var docEl = wkDoc.documentElement;
 	var sheetsEl = docEl.getElementsByTagName("sheets")[0];
@@ -145,7 +155,7 @@ var Workbook = function(wkDoc,sharedStringsArr,hzip) {
 		var sheetArr = [];
 		for(var i=0; i<sheetElArr.length; i++) {
 			var sheetEl = sheetElArr[i];
-			var sheet = yield Sheet.getSheet(sheetEl,sharedStringsArr,hzip);
+			var sheet = yield Sheet.getSheet(sheetEl,sharedStringsArr,relsObj,hzip);
 			sheetArr.push(sheet);
 		}
 		return sheetArr;
@@ -154,7 +164,7 @@ var Workbook = function(wkDoc,sharedStringsArr,hzip) {
 		var isInt = Number.isInteger(paramString);
 		if(isInt) {
 			var sheetEl = sheetElArr[paramString];
-			var sheet = yield Sheet.getSheet(sheetEl,sharedStringsArr,hzip);
+			var sheet = yield Sheet.getSheet(sheetEl,sharedStringsArr,relsObj,hzip);
 			return sheet;
 		}
 		var sheet0El = undefined;
@@ -167,7 +177,7 @@ var Workbook = function(wkDoc,sharedStringsArr,hzip) {
 			}
 		}
 		if(!sheet0El) return;
-		var sheet = yield Sheet.getSheet(sheet0El,sharedStringsArr,hzip);
+		var sheet = yield Sheet.getSheet(sheet0El,sharedStringsArr,relsObj,hzip);
 		return sheet;
 	});
 	t.getSheetNames = function() {
@@ -217,6 +227,24 @@ exports.getWorkbook = wrap(function*(buf) {
 			sharedStringsArr.push(siStr);
 		}
 	}
-	var workbook = new Workbook(wkDoc,sharedStringsArr,hzip);
+	var relsObj = {};
+    var relsEny = hzip.getEntry("xl/_rels/workbook.xml.rels");
+    if (relsEny) {
+		var relsBuf = yield inflateRawAysnc(relsEny.cfile);
+		var relsDoc = new DOMParser().parseFromString(relsBuf.toString(), 'text/xml');
+		var relsEl = relsDoc.documentElement;
+		var relArr = relsEl.getElementsByTagName("Relationship");
+		for(var i=0; i<relArr.length; i++) {
+			var relEl = relArr[i];
+			var relId = relEl.getAttribute("Id");
+			var relType = relEl.getAttribute("Type");
+			var relTarget = relEl.getAttribute("Target");
+			if (relType === "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet") {
+				relsObj[relId] = relTarget;
+			}
+		}
+	}
+	var workbook = new Workbook(wkDoc,sharedStringsArr,relsObj,hzip);
 	return workbook;
 });
+
