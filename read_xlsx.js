@@ -59,7 +59,8 @@ var Sheet = function(sheetEl,sheetDoc,sharedStringsArr,hzip) {
 	t.findCell = function(paramString) {
 		if(paramString == null) return paramString;
 		paramString = paramString.trim();
-		var rowKey = paramString[1];
+    var firstDigit = paramString.match(/\d/);
+		var rowKey = paramString.substring(paramString.indexOf(firstDigit));
 		for(var i=0; i<rowElArr.length; i++) {
 			var rowEl = rowElArr[i];
 			if(rowEl.getAttribute("r") !== rowKey) continue;
